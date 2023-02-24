@@ -1,4 +1,4 @@
-defmodule Realtime.RLS.Repo.Migrations.AddQuotedRegtypesSupport do
+defmodule Realtime.Tenants.Repo.Migrations.AddQuotedRegtypesSupport do
   use Ecto.Migration
 
   def change do

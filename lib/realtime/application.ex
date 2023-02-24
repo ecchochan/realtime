@@ -45,6 +45,12 @@ defmodule Realtime.Application do
     :syn.add_node_to_scopes([:users, RegionNodes])
     :syn.join(RegionNodes, System.get_env("FLY_REGION"), self(), node: node())
 
+    {:ok, modules} = :application.get_key(:realtime, :modules)
+
+    modules
+    |> Enum.filter(&String.starts_with?(to_string(&1), "Elixir.Realtime.Tenants.Repo.Migrations"))
+    |> Enum.each(&Code.ensure_loaded!/1)
+
     extensions_supervisors =
       Enum.reduce(Application.get_env(:realtime, :extensions), [], fn
         {_, %{supervisor: name}}, acc ->

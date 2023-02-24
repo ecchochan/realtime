@@ -1,9 +1,42 @@
-defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenPayloadTooLarge do
+defmodule Realtime.Tenants.Repo.Migrations.AddQuotedRegtypesBackwardCompatibilitySupport do
   use Ecto.Migration
 
   def change do
     execute("
-      create or replace function realtime.apply_rls(wal jsonb, max_record_bytes int = 1024 * 1024)
+      create or replace function realtime.is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[])
+            returns bool
+            language sql
+            immutable
+        as $$
+        /*
+        Should the record be visible (true) or filtered out (false) after *filters* are applied
+        */
+            select
+                -- Default to allowed when no filters present
+                coalesce(
+                    sum(
+                        realtime.check_equality_op(
+                            op:=f.op,
+                            type_:=coalesce(
+                                col.type_oid::regtype, -- null when wal2json version <= 2.4
+                                col.type_name::regtype
+                            ),
+                            -- cast jsonb to text
+                            val_1:=col.value #>> '{}',
+                            val_2:=f.value
+                        )::int
+                    ) = count(1),
+                    true
+                )
+            from
+                unnest(filters) f
+                join unnest(columns) col
+                    on f.column_name = col.name;
+        $$;
+    ")
+
+    execute("
+    create or replace function realtime.apply_rls(wal jsonb, max_record_bytes int = 1024 * 1024)
           returns setof realtime.wal_rls
           language plpgsql
           volatile
@@ -11,6 +44,7 @@ defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenP
       declare
           -- Regclass of the table e.g. public.notes
           entity_ regclass = (quote_ident(wal ->> 'schema') || '.' || quote_ident(wal ->> 'table'))::regclass;
+
           -- I, U, D, T: insert, update ...
           action realtime.action = (
               case wal ->> 'action'
@@ -20,23 +54,29 @@ defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenP
                   else 'ERROR'
               end
           );
+
           -- Is row level security enabled for the table
           is_rls_enabled bool = relrowsecurity from pg_class where oid = entity_;
+
           subscriptions realtime.subscription[] = array_agg(subs)
               from
                   realtime.subscription subs
               where
                   subs.entity = entity_;
+
           -- Subscription vars
           roles regrole[] = array_agg(distinct us.claims_role)
               from
                   unnest(subscriptions) us;
+
           working_role regrole;
           claimed_role regrole;
           claims jsonb;
+
           subscription_id uuid;
           subscription_has_access bool;
           visible_to_subscription_ids uuid[] = '{}';
+
           -- structured info for wal's columns
           columns realtime.wal_column[];
           -- previous identity values for update/delete
@@ -58,7 +98,10 @@ defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenP
                       x->>'typeoid',
                       realtime.cast(
                           (x->'value') #>> '{}',
-                          (x->>'typeoid')::regtype
+                          coalesce(
+                              (x->>'typeoid')::regtype, -- null when wal2json version <= 2.4
+                              (x->>'type')::regtype
+                          )
                       ),
                       (pks ->> 'name') is not null,
                       true
@@ -77,7 +120,10 @@ defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenP
                       x->>'typeoid',
                       realtime.cast(
                           (x->'value') #>> '{}',
-                          (x->>'typeoid')::regtype
+                          coalesce(
+                              (x->>'typeoid')::regtype, -- null when wal2json version <= 2.4
+                              (x->>'type')::regtype
+                          )
                       ),
                       (pks ->> 'name') is not null,
                       true
@@ -271,7 +317,7 @@ defmodule Realtime.RLS.Repo.Migrations.AddOutputForDataLessThanEqual64BytesWhenP
 
           perform set_config('role', null, true);
       end;
-      $$;
+    $$;
     ")
   end
 end

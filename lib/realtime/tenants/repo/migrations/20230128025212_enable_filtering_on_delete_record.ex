@@ -1,4 +1,4 @@
-defmodule Realtime.RLS.Repo.Migrations.MillisecondPrecisionForWalrus do
+defmodule Realtime.Tenants.Repo.Migrations.EnableFilteringOnDeleteRecord do
   use Ecto.Migration
 
   def change do
@@ -165,7 +165,7 @@ defmodule Realtime.RLS.Repo.Migrations.MillisecondPrecisionForWalrus do
                       'type', action,
                       'commit_timestamp', to_char(
                           (wal ->> 'timestamp')::timestamptz,
-                          'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"'
+                          'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'
                       ),
                       'columns', (
                           select

@@ -1,8 +1,8 @@
-defmodule Realtime.RLS.Repo.Migrations.RecreateRealtimeBuildPreparedStatementSqlFunction do
+defmodule Realtime.Tenants.Repo.Migrations.RecreateRealtimeBuildPreparedStatementSqlFunction do
   use Ecto.Migration
 
   def change do
-    execute "
+    execute("
       create or replace function realtime.build_prepared_statement_sql(
           prepared_statement_name text,
           entity regclass,
@@ -35,6 +35,6 @@ defmodule Realtime.RLS.Repo.Migrations.RecreateRealtimeBuildPreparedStatementSql
           group by
               entity
       $$;
-    "
+    ")
   end
 end

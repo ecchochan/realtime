@@ -1,8 +1,8 @@
-defmodule Realtime.Repo.Migrations.CreateRealtimeCheckEqualityOpFunction do
+defmodule Realtime.Tenants.Repo.Migrations.CreateRealtimeCheckEqualityOpFunction do
   use Ecto.Migration
 
   def change do
-    execute "create function realtime.check_equality_op(
+    execute("create function realtime.check_equality_op(
       op realtime.equality_op,
       type_ regtype,
       val_1 text,
@@ -32,6 +32,6 @@ defmodule Realtime.Repo.Migrations.CreateRealtimeCheckEqualityOpFunction do
       execute format('select %L::'|| type_::text || ' ' || op_symbol || ' %L::'|| type_::text, val_1, val_2) into res;
       return res;
     end;
-    $$;"
+    $$;")
   end
 end

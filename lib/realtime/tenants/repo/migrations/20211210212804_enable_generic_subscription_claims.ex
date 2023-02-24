@@ -1,34 +1,36 @@
-defmodule Realtime.Repo.Migrations.EnableGenericSubscriptionClaims do
+defmodule Realtime.Tenants.Repo.Migrations.EnableGenericSubscriptionClaims do
   use Ecto.Migration
 
   def change do
-    execute "truncate table realtime.subscription restart identity"
+    execute("truncate table realtime.subscription restart identity")
 
-    execute "alter table realtime.subscription
+    execute("alter table realtime.subscription
       drop constraint subscription_entity_user_id_filters_key cascade,
       drop column email cascade,
-      drop column created_at cascade"
+      drop column created_at cascade")
 
-    execute "alter table realtime.subscription rename user_id to subscription_id"
+    execute("alter table realtime.subscription rename user_id to subscription_id")
 
-    execute "create function realtime.to_regrole(role_name text)
+    execute("create function realtime.to_regrole(role_name text)
       returns regrole
       immutable
       language sql
       -- required to allow use in generated clause
-      as $$ select role_name::regrole $$;"
+      as $$ select role_name::regrole $$;")
 
-    execute "alter table realtime.subscription
+    execute("alter table realtime.subscription
       add column claims jsonb not null,
       add column claims_role regrole not null generated always as (realtime.to_regrole(claims ->> 'role')) stored,
-      add column created_at timestamp not null default timezone('utc', now())"
+      add column created_at timestamp not null default timezone('utc', now())")
 
-    execute "create unique index subscription_subscription_id_entity_filters_key on realtime.subscription (subscription_id, entity, filters)"
+    execute(
+      "create unique index subscription_subscription_id_entity_filters_key on realtime.subscription (subscription_id, entity, filters)"
+    )
 
-    execute "revoke usage on schema realtime from authenticated;"
-    execute "revoke all on realtime.subscription from authenticated;"
+    execute("revoke usage on schema realtime from authenticated;")
+    execute("revoke all on realtime.subscription from authenticated;")
 
-    execute "create or replace function realtime.subscription_check_filters()
+    execute("create or replace function realtime.subscription_check_filters()
       returns trigger
       language plpgsql
       as $$
@@ -79,12 +81,12 @@ defmodule Realtime.Repo.Migrations.EnableGenericSubscriptionClaims do
 
         return new;
       end;
-    $$;"
+    $$;")
 
-    execute "alter type realtime.wal_rls rename attribute users to subscription_ids cascade;"
+    execute("alter type realtime.wal_rls rename attribute users to subscription_ids cascade;")
 
-    execute "drop function realtime.apply_rls(jsonb, integer);"
-    execute "create function realtime.apply_rls(wal jsonb, max_record_bytes int = 1024 * 1024)
+    execute("drop function realtime.apply_rls(jsonb, integer);")
+    execute("create function realtime.apply_rls(wal jsonb, max_record_bytes int = 1024 * 1024)
       returns setof realtime.wal_rls
       language plpgsql
       volatile
@@ -316,6 +318,6 @@ defmodule Realtime.Repo.Migrations.EnableGenericSubscriptionClaims do
 
         perform set_config('role', null, true);
       end;
-      $$;"
+      $$;")
   end
 end

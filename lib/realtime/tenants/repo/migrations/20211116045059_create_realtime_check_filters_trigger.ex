@@ -1,8 +1,8 @@
-defmodule Realtime.Repo.Migrations.CreateRealtimeCheckFiltersTrigger do
+defmodule Realtime.Tenants.Repo.Migrations.CreateRealtimeCheckFiltersTrigger do
   use Ecto.Migration
 
   def change do
-    execute "create function realtime.subscription_check_filters()
+    execute("create function realtime.subscription_check_filters()
       returns trigger
       language plpgsql
     as $$
@@ -53,11 +53,11 @@ defmodule Realtime.Repo.Migrations.CreateRealtimeCheckFiltersTrigger do
 
       return new;
     end;
-    $$;"
+    $$;")
 
-    execute "create trigger tr_check_filters
+    execute("create trigger tr_check_filters
     before insert or update on realtime.subscription
     for each row
-    execute function realtime.subscription_check_filters();"
+    execute function realtime.subscription_check_filters();")
   end
 end

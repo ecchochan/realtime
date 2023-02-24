@@ -1,8 +1,8 @@
-defmodule Realtime.Repo.Migrations.UpdateRealtimeSubscriptionCheckFiltersFunctionSecurity do
+defmodule Realtime.Tenants.Repo.Migrations.UpdateRealtimeSubscriptionCheckFiltersFunctionSecurity do
   use Ecto.Migration
 
   def change do
-    execute "create or replace function realtime.subscription_check_filters()
+    execute("create or replace function realtime.subscription_check_filters()
       returns trigger
       language plpgsql
     as $$
@@ -53,6 +53,6 @@ defmodule Realtime.Repo.Migrations.UpdateRealtimeSubscriptionCheckFiltersFunctio
 
       return new;
     end;
-    $$;"
+    $$;")
   end
 end
