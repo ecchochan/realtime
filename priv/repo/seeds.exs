@@ -12,6 +12,7 @@ Repo.transaction(fn ->
   |> Tenant.changeset(%{
     "name" => tenant_name,
     "external_id" => tenant_name,
+    "jwt_signing_method" => System.get_env("API_JWT_METHOD", "HS256"),
     "jwt_secret" => System.get_env("API_JWT_SECRET", "a1d99c8b-91b6-47b2-8f3c-aa7d9a9ad20f"),
     "extensions" => [
       %{

@@ -38,6 +38,7 @@ defmodule RealtimeWeb.UserSocket do
 
       with %Tenant{
              extensions: extensions,
+             jwt_signing_method: jwt_signing_method,
              jwt_secret: jwt_secret,
              max_concurrent_users: max_conn_users,
              max_events_per_second: max_events_per_second,
@@ -53,6 +54,7 @@ defmodule RealtimeWeb.UserSocket do
         assigns =
           %RealtimeChannel.Assigns{
             claims: claims,
+            jwt_signing_method: jwt_signing_method,
             jwt_secret: jwt_secret,
             limits: %{
               max_concurrent_users: max_conn_users,
