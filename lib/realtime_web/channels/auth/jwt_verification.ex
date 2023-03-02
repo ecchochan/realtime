@@ -26,7 +26,9 @@ defmodule RealtimeWeb.JwtVerification do
 
   @hs_algorithms ["HS256", "HS384", "HS512"]
 
-  def verify(token, secret) when is_binary(token) do
+  @rs_algorithms ["RS256", "RS384", "RS512"]
+
+  def verify(token, secret, signing_method, pubkey) when is_binary(token) do
     with {:ok, _claims} <- check_claims_format(token),
          {:ok, header} <- check_header_format(token),
          {:ok, signer} <- generate_signer(header, secret) do
@@ -36,7 +38,7 @@ defmodule RealtimeWeb.JwtVerification do
     end
   end
 
-  def verify(_token, _secret), do: {:error, :not_a_string}
+  def verify(_token, _secret, _signing_method, _pubkey), do: {:error, :not_a_string}
 
   defp check_header_format(token) do
     case Joken.peek_header(token) do
@@ -54,6 +56,10 @@ defmodule RealtimeWeb.JwtVerification do
 
   defp generate_signer(%{"typ" => "JWT", "alg" => alg}, jwt_secret) when alg in @hs_algorithms do
     {:ok, Joken.Signer.create(alg, jwt_secret)}
+  end
+
+  defp generate_signer(%{"typ" => "JWT", "alg" => alg}, jwt_secret) when alg in @rs_algorithms do
+    {:ok, Joken.Signer.create(alg, %{"pem" => jwt_secret})}
   end
 
   defp generate_signer(_header, _secret), do: {:error, :error_generating_signer}

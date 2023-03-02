@@ -10,7 +10,8 @@ defmodule RealtimeWeb.ApiJwtSecretTest do
   end
 
   test "api key is right", %{conn: conn} do
-    with_mock JwtVerification, verify: fn _token, _secret -> {:ok, %{}} end do
+    with_mock JwtVerification,
+      verify: fn _token, _secret, _signing_method, _pubkey -> {:ok, %{}} end do
       jwt = "jwt_token"
 
       conn =

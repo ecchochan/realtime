@@ -1,12 +1,12 @@
-defmodule RealtimeWeb.JwtVerificationTest do
+defmodule RealtimeWeb.JwtVerificationRS256Test do
   use ExUnit.Case, async: false
 
   alias RealtimeWeb.JwtVerification
   alias RealtimeWeb.Joken.CurrentTime.Mock
 
-  @jwt_secret "secret"
-  @alg "HS256"
-  @pubkey ""
+  @jwt_secret "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAxLDuvx4SeTr6KSwmXd3ZCwCGa8YW0lZMSv7sUa9IF3uKSm1d\nxzFWJEVknVjUUJneZHW4w13ooEzwxo84jlgeWWQiuaYmQejNXOFubRhvqxvvUMzX\njTTny8Ogirdhgokv7SlX/PqHMU5HA15BQ+lDqOCSGnkxv/NQp5BmCXNG2Tku3IA4\nRqQNUyWvjdwozkHXHPg/bq+wiBJyF+NS755k/Gn2dhTg3x3WSV5Ij9Jnl/kYHmRE\nxxuSqJpgYejP8CPl1X8xIZrIaUUuFH0IVdqo/ttuqR0ozyqI3q8PZpSZkL3/nPSg\nDBgNVSm1UuCQAHFMBJjPOiIPGnHBrY6/ndWJgQIDAQABAoIBAQCLWYscLhMKfqVD\nTDs2X3lo2QtjCambhXZx35/P024w7N6yEj/RYvvToLJC4+8v14N/CwRGrZ6lCz2+\nfzOjbXy6+j2756HNKkFsn24brqdWw+jOBwJj0WqzqzpvbLKRx94DmTn0Sg5D+WBI\nW5vDoFzGJax9QwXjJ2AqBxyzb09vj1ywQ823DFxHeUzDaCxItuFTkoPIpKR8WKTi\nAYKHM7z4gDQ3L3rXgkCnLxvDXrF4p1lI0252cK2K2Xj9cR9+mlFQNaZToQ3Mgio0\noBqGBnOo1pEs71FLaQe4/uvLgvpRtXu9ncPmAgrxuLOa0eyAjzF7GsWQkFuyNnpK\npqrfEoNRAoGBAOdKGsC3zonuEfw4lCrCL1oYlH0R3x9k+x3hWV/baWSiqrxZsZ/G\niArIxBAvFJOLt7hIGkUf4Ps6qaTSXHWHPUiV1Yf890ZCZNHB1yeoIMmpnEo95uNN\nlU7VaP0Ty18LYN5EnwGBBgJw6+BkJtgE7hHWvh6bPgmqker6g9emhL8VAoGBANm0\ni2wmtcfrEduRMokJ/4slWcFzsvsAwerLtiYWITqSiop/FQLgJ0Ibi7V2GqIl9H5g\nLd9VXklQ46wDUkHU83jqvNQR9OiAoFVQ9vFSxkj/rMu6/vghYtZqyG9vGApSunYW\nf/GtjA1lYczoTJvurcDL544MfsH/XogssafASFu9AoGAFywffgtsT/lgJ+rrPVVz\nNQ2dYuJ1fkm5twaq06XB62k4veImn6FeY+Y1boGpCBdJctcWerJ08fawpGjHBqdk\nBm+skxFPHOTuAO3wxnJbxpiNpgqJpWBSgzFycViYWY9kRyCM5bOtjHUPzM177syf\npX3kUmCvWHyUXfx3VRXD2vkCgYBNund5Es0eZuCGW24Gnao+nQRR3KRPl/KkiT0s\nlgQhLIcIcd0nnK6HnNwh2twhfpmvsVlPfuReGuJe3QS2eni/eFgZA5xEkwAr1e+F\nM/+VuquQReCY6Rqn4ZJUrv6PWQA3/0qJGGSDt+nWRi5sEii5SFQRVIbBbxLqXcLE\nWRO8pQKBgEe+LWpALZSM+hFTk3hJ503fxmP82kpWrwhS3z7cfNx3w0PkGIU7ipJd\nvYNcR0Pbhk7RvDW54J4SZQv1aI67mxk390u1hn8VQjpwJFZslJLDEhwlANLcSIeu\nkYE7IaJ4nya4gINVnLPZSMc8FYV7b7M4dlqIywB0PwzOgD9i+ezj\n-----END RSA PRIVATE KEY-----\n"
+  @alg "RS256"
+  @pubkey "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxLDuvx4SeTr6KSwmXd3Z\nCwCGa8YW0lZMSv7sUa9IF3uKSm1dxzFWJEVknVjUUJneZHW4w13ooEzwxo84jlge\nWWQiuaYmQejNXOFubRhvqxvvUMzXjTTny8Ogirdhgokv7SlX/PqHMU5HA15BQ+lD\nqOCSGnkxv/NQp5BmCXNG2Tku3IA4RqQNUyWvjdwozkHXHPg/bq+wiBJyF+NS755k\n/Gn2dhTg3x3WSV5Ij9Jnl/kYHmRExxuSqJpgYejP8CPl1X8xIZrIaUUuFH0IVdqo\n/ttuqR0ozyqI3q8PZpSZkL3/nPSgDBgNVSm1UuCQAHFMBJjPOiIPGnHBrY6/ndWJ\ngQIDAQAB\n-----END PUBLIC KEY-----\n"
 
   setup_all do
     Application.put_env(:realtime, :jwt_secret, @jwt_secret)
@@ -51,7 +51,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
     assert {:error, _reason} = JwtVerification.verify(invalid_token, @jwt_secret, @alg, @pubkey)
 
     invalid_token =
-      Base.encode64("{\"alg\": \"HS256\"}") <>
+      Base.encode64("{\"alg\": \"RS256\"}") <>
         "." <> Base.encode64("{}") <> "." <> Base.encode64("<<\"sig\">>")
 
     assert {:error, _reason} = JwtVerification.verify(invalid_token, @jwt_secret, @alg, @pubkey)
@@ -65,8 +65,8 @@ defmodule RealtimeWeb.JwtVerificationTest do
     assert {:error, _reason} = JwtVerification.verify(invalid_token, @jwt_secret, @alg, @pubkey)
   end
 
-  test "verify/1 when token is valid and alg is HS256" do
-    signer = Joken.Signer.create("HS256", @jwt_secret)
+  test "verify/1 when token is valid and alg is RS256" do
+    signer = Joken.Signer.create("RS256", %{"pem" => @jwt_secret})
 
     token = Joken.generate_and_sign!(%{}, %{}, signer)
 
@@ -74,7 +74,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
   end
 
   test "verify/1 when token is valid and alg is HS384" do
-    signer = Joken.Signer.create("HS384", @jwt_secret)
+    signer = Joken.Signer.create("RS384", %{"pem" => @jwt_secret})
 
     token = Joken.generate_and_sign!(%{}, %{}, signer)
 
@@ -82,7 +82,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
   end
 
   test "verify/1 when token is valid and alg is HS512" do
-    signer = Joken.Signer.create("HS512", @jwt_secret)
+    signer = Joken.Signer.create("RS512", %{"pem" => @jwt_secret})
 
     token = Joken.generate_and_sign!(%{}, %{}, signer)
 
@@ -90,7 +90,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
   end
 
   test "verify/1 when token has expired" do
-    signer = Joken.Signer.create(@alg, @jwt_secret)
+    signer = Joken.Signer.create(@alg, %{"pem" => @jwt_secret})
 
     current_time = 1_610_086_801
     Mock.freeze(current_time)
@@ -121,7 +121,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
   end
 
   test "verify/1 when token has not expired" do
-    signer = Joken.Signer.create(@alg, @jwt_secret)
+    signer = Joken.Signer.create(@alg, %{"pem" => @jwt_secret})
 
     Mock.freeze()
     current_time = Mock.current_time()
@@ -144,7 +144,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
       "aud" => "www.test.com"
     })
 
-    signer = Joken.Signer.create(@alg, @jwt_secret)
+    signer = Joken.Signer.create(@alg, %{"pem" => @jwt_secret})
 
     Mock.freeze()
     current_time = Mock.current_time()
@@ -170,7 +170,7 @@ defmodule RealtimeWeb.JwtVerificationTest do
       "aud" => "www.test.com"
     })
 
-    signer = Joken.Signer.create(@alg, @jwt_secret)
+    signer = Joken.Signer.create(@alg, %{"pem" => @jwt_secret})
 
     Mock.freeze()
     current_time = Mock.current_time()

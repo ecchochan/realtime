@@ -31,7 +31,11 @@ config :realtime,
   db_enc_key: "1234567890123456",
   jwt_claim_validators: System.get_env("JWT_CLAIM_VALIDATORS", "{}"),
   api_jwt_secret: System.get_env("API_JWT_SECRET"),
+  api_jwt_signing_method: System.get_env("API_JWT_SIGNING_METHOD"),
+  api_jwt_pubkey: System.get_env("API_JWT_PUBKEY"),
   metrics_jwt_secret: "test",
+  metrics_jwt_signing_method: "HS256",
+  metrics_jwt_pubkey: "",
   prom_poll_rate: 5_000,
   fly_alloc_id: "123e4567-e89b-12d3-a456-426614174000"
 
