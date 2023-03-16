@@ -24,7 +24,9 @@ defmodule RealtimeWeb.Plugs.RateLimiterTest do
       }
     ],
     "postgres_cdc_default" => "postgres_cdc_rls",
-    "jwt_secret" => "new secret"
+    "jwt_secret" => "new secret",
+    "jwt_signing_method" => "HS256",
+    "jwt_pubkey" => ""
   }
 
   setup %{conn: conn} do

@@ -27,7 +27,7 @@ defmodule RealtimeWeb.RealtimeChannelTest do
       with_mocks([
         {ChannelsAuthorization, [],
          [
-           authorize_conn: fn _, _ ->
+           authorize_conn: fn _, _, _, _ ->
              {:ok, %{"exp" => Joken.current_time() + 1_000, "role" => "postgres"}}
            end
          ]}
@@ -47,7 +47,7 @@ defmodule RealtimeWeb.RealtimeChannelTest do
       with_mocks([
         {ChannelsAuthorization, [],
          [
-           authorize_conn: fn _, _ ->
+           authorize_conn: fn _, _, _, _ ->
              {:ok, %{"exp" => Joken.current_time() + 1_000, "role" => "postgres"}}
            end
          ]}
@@ -78,7 +78,7 @@ defmodule RealtimeWeb.RealtimeChannelTest do
       with_mocks([
         {ChannelsAuthorization, [],
          [
-           authorize_conn: fn _, _ ->
+           authorize_conn: fn _, _, _, _ ->
              {:ok, %{"exp" => Joken.current_time() + 1, "role" => "postgres"}}
            end
          ]}
@@ -97,7 +97,7 @@ defmodule RealtimeWeb.RealtimeChannelTest do
       with_mocks([
         {ChannelsAuthorization, [],
          [
-           authorize_conn: fn _, _ ->
+           authorize_conn: fn _, _, _, _ ->
              {:ok, %{"exp" => Joken.current_time(), "role" => "postgres"}}
            end
          ]}
@@ -115,7 +115,7 @@ defmodule RealtimeWeb.RealtimeChannelTest do
       with_mocks([
         {ChannelsAuthorization, [],
          [
-           authorize_conn: fn _, _ ->
+           authorize_conn: fn _, _, _, _ ->
              {:ok, %{"exp" => Joken.current_time() - 1, "role" => "postgres"}}
            end
          ]}

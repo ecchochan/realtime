@@ -23,6 +23,8 @@ defmodule Realtime.Extensions.CdcRlsTest do
     assigns = %{
       tenant_token: @token,
       jwt_secret: tenant.jwt_secret,
+      jwt_signing_method: tenant.jwt_signing_method,
+      jwt_pubkey: tenant.jwt_pubkey,
       tenant: tenant.external_id,
       postgres_extension: PostgresCdc.filter_settings(@cdc, tenant.extensions),
       postgres_cdc_module: @cdc_module,
@@ -41,7 +43,7 @@ defmodule Realtime.Extensions.CdcRlsTest do
     with_mocks([
       {ChannelsAuthorization, [],
        [
-         authorize_conn: fn _, _ ->
+         authorize_conn: fn _, _, _, _ ->
            {:ok, %{"exp" => Joken.current_time() + 1_000, "role" => "postgres"}}
          end
        ]}
