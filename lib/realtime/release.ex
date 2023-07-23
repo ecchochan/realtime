@@ -33,6 +33,21 @@ defmodule Realtime.Release do
       end)
   end
 
+  def bootstrap(repo) do
+    load_app()
+
+    {:ok, {:ok, _}, _} =
+      Ecto.Migrator.with_repo(repo, fn _repo ->
+        bootstrap_file = "#{:code.priv_dir(@app)}/repo/bootstrap.exs"
+
+        if File.regular?(bootstrap_file) do
+          {:ok, Code.eval_file(bootstrap_file)}
+        else
+          {:error, "Bootstrap file not found."}
+        end
+      end)
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end
